@@ -65,8 +65,13 @@ macro_rules! print {
 macro_rules! println {
     // 如果什么参数都不传，就只打印一个换行符 \n
     () => { $crate::print!("\n") };
+    // match 模式匹配，空元组则创建一个换行符
     // 如果传了参数，就在结尾自动加上换行符 \n
     ($fmt: literal $(, $($arg: tt)+)?) => {
         $crate::console::print(format_args!(concat!($fmt, "\n") $(, $($arg)+)?));
+        // 这里有点像正则，$(, $($arg)+)?表示整体可选，就是逗号加一个字符串，有或没有都行，如果有就 match Some，就是逗号加一串字符串
+        // $($arg: tt)+ 中 tt = token tree，能匹配任何东西， + 表示一个或多个
+        // 比如println!("hello");           // 没有后半段，? 匹配空
+        // println!("x = {}", x);      // 有后半段，, $($arg:tt)+ 匹配 ", x"
     }
 }
